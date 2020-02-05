@@ -5,14 +5,26 @@ describe Board do
   describe "#move" do
     it "renders board while doing the move" do
       expect(b.move("a2", "a4")).to eql("allow")
-      expect(b.move("h2", "h4")).to eql("allow")
+      expect(b.move("a1", "a4")).to eql("invalid move")
+      expect((b.move("a7", "a5", 'b'))).to eq("allow")
+      expect((b.move("a5", "a4", 'b'))).to eq("kill")
+      expect(b.move("a1", "a4")).to eq("kill")
+      expect(b.move("a8", "a2", 'b')).to eq("allow")
+      expect(b.move("a4", "a5")).to eq("kill")
 
-      # expect(b.move("a2", "a4")).to eql("empty space")
-      expect(b.move('a1', 'a8')).to eq("allow")
-      expect(b.move('h1', 'h8')).to eq("allow")
-      expect(b.move('f1', 'b5')).to eq("allow")
-      expect(b.move('c1', 'g5')).to eq("allow")
-      expect(b.move('d7', 'd5')).to eq("allow")
+      expect(b.move("c1", "a3")).to eq("no kill")
+      expect(b.move("b2", "b3")).to eq("allow")
+      expect(b.move("c1", "a3")).to eq("allow")
+      expect(b.move("a3", "e7")).to eq("kill")
+
+      # expect(b.move("h2", "h4")).to eql("allow")
+
+      # # expect(b.move("a2", "a4")).to eql("empty space")
+      # expect(b.move('a1', 'a8')).to eq("allow")
+      # expect(b.move('h1', 'h8')).to eq("allow")
+      # expect(b.move('f1', 'b5')).to eq("allow")
+      # expect(b.move('c1', 'g5')).to eq("allow")
+      # expect(b.move('d7', 'd5')).to eq("allow")
 
       # expect(b.move('b1', 'c3')).to eq("allow")
       # expect(b.move('b1', 'c3')).to eq("allow")

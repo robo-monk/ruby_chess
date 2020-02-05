@@ -25,6 +25,5 @@ class Pawn
       @sprite
     end
   end
-end
 
-# puts Pawn.new('queen').render
+end

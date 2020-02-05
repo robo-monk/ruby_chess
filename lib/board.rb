@@ -83,42 +83,72 @@ class Board
   def allows_move?(pawn, from, to)
     allows_dir?(pawn, from, to) && allows_val?(pawn, from, to)
   end
-  def move_reccur(from, to)
+  def move_reccur(from, to, kill=false)
     sleep(ANIMATION_TIME)
     pawn = @obj_matrix[from[1]][from[0]]
     if allows_move?(pawn, from, to)
       vec = get_dir(from, to)
       next_move = [from[0]+vec[0], from[1]+vec[1]]
-      puts @sym_matrix[next_move[1]][next_move[0]]
-      puts @sym_matrix[from[1]][from[0]]
-      @sym_matrix[next_move[1]][next_move[0]] = @sym_matrix[from[1]][from[0]]
-      @sym_matrix[from[1]][from[0]] = :fs
-      build_board
-      render
-      move_reccur(next_move, to)
-      pawn.initiated = true
-      return "allow"
+      if (@sym_matrix[next_move[1]][next_move[0]]) == :fs
+        @sym_matrix[next_move[1]][next_move[0]] = @sym_matrix[from[1]][from[0]]
+        @sym_matrix[from[1]][from[0]] = :fs
+        build_board
+        render
+        move_reccur(next_move, to, kill)
+        pawn.initiated = true
+        return "allow"
+      else
+        # puts 'got into kill mode'
+        if (sym_matrix[next_move[1]][next_move[0]]) == kill
+          @sym_matrix[next_move[1]][next_move[0]] = @sym_matrix[from[1]][from[0]]
+          @sym_matrix[from[1]][from[0]] = :fs
+          build_board
+          render
+          pawn.initiated = true
+          return "kill"
+        else
+          puts kill
+          return 'no kill'
+        end
+      end
     else
       return "denied"
     end
   end
-  def move(from_str, to_str)
+  def move(from_str, to_str, cal='w')
     from = convert_to_xy(from_str)
     to = convert_to_xy(to_str)
-    case @sym_matrix[from[1]][from[0]]
-    when :fs
-      move_reccur(from, to)
-    when :wp, :bp
-      puts "moving pawn"
-      move_reccur(from, to)
-    when :wr, :br
-      puts "moving rook"
-      move_reccur(from, to)
-    when :wb, :bb
-      puts "moving bishop"
-      move_reccur(from, to)
+    moving_pawn = @sym_matrix[from[1]][from[0]]
+    landing_square = @sym_matrix[to[1]][to[0]]
+    kill = @sym_matrix[to[1]][to[0]]
+    # puts kill
+    col_moving = moving_pawn[0]
+    col_landing = landing_square[0]
+    if col_moving == cal
+      if col_landing == "f"
+        # free space
+        case moving_pawn
+        when :fs
+          move_reccur(from, to)
+        when :wp, :bp
+          move_reccur(from, to)
+        when :wr, :br
+          move_reccur(from, to)
+        when :wb, :bb
+          move_reccur(from, to)
+        else
+          'empty space'
+        end
+      else
+        if col_landing==col_moving
+          return "invalid move"
+        else
+          move_reccur(from, to, kill)
+          return 'kill'
+        end
+      end
     else
-      'empty space'
+      return 'cannot move pawn'
     end
   end
 end
